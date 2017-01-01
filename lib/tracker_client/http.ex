@@ -29,9 +29,6 @@ defmodule TrackerClient.HTTP do
    * `key` - additional identification for the client.
    * `trackerid` - if a previous announce contained a tracker id, include it here.
   """
-  @callback announce(url :: String.t, params :: Keyword.t) ::
-    {:ok, map} |
-    {:error, String.t | :http}
   def announce(announce, params) do
     query =
       params
