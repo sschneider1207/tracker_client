@@ -72,7 +72,7 @@ defmodule TrackerClient.UDP.Statem do
 
   @doc false
   def handle_event({:call, from}, {:announce, params}, :connection_request, data) do
-    Logger.debug("sending connection request")
+    #Logger.debug("sending connection request")
     case connect_request(data.socket, data.ipv4, data.uri.port) do
       {:ok, tx} ->
         timer = start_retry_timer(0)
@@ -91,8 +91,8 @@ defmodule TrackerClient.UDP.Statem do
       conn_id :: 64-big-integer,
     >> = response_packet
     :timer.cancel(data.timer)
-    Logger.debug("received connection response", conn_id: conn_id)
-    Logger.debug("sending announce request", conn_id: conn_id)
+    #Logger.debug("received connection response", conn_id: conn_id)
+    #Logger.debug("sending announce request", conn_id: conn_id)
     case announce_request(data.socket, data.ipv4, data.uri.port, conn_id, data.params) do
       {:ok, tx} ->
         timer = start_retry_timer(0)
@@ -113,17 +113,17 @@ defmodule TrackerClient.UDP.Statem do
     >> = response_packet
     peers = Peer.parse_binary_peers(peers_bin)
     :timer.cancel(data.timer)
-    Logger.debug("received announce response", conn_id: data.conn_id)
+    #Logger.debug("received announce response", conn_id: data.conn_id)
     reply = AnnounceResponse.new(interval, leechers, seeders, peers)
     {:stop_and_reply, :normal, [{:reply, data.from, {:ok, reply}}]}
   end
   def handle_event(:info, :retry, state, %{request_num: 8} = data) do
-    Logger.debug("too many retires", state: state)
+    #Logger.debug("too many retires", state: state)
     {:stop_and_reply, :timeout, [{:reply, data.from, {:error, :timeout}}]}
   end
   def handle_event(:info, :retry, state, data) do#when state in ~w(connection_response, announce_response)a do
     request_num = data.request_num + 1
-    Logger.debug("retrying request", request_num: request_num, state: state)
+    #Logger.debug("retrying request", request_num: request_num, state: state)
     fun = case state do
       :connection_response -> fn -> connect_request(data.socket, data.ipv4, data.uri.port) end
       :announce_response -> fn -> announce_request(data.socket, data.ipv4, data.uri.port, data.conn_id, data.params) end
@@ -137,9 +137,9 @@ defmodule TrackerClient.UDP.Statem do
     end
   end
   def handle_event(:info, :conn_expired, _state, data) do
-    Logger.debug("conn_id expired")
+    #Logger.debug("conn_id expired")
     :timer.cancel(data.timer)
-    Logger.debug("sending connection request")
+    #Logger.debug("sending connection request")
     case connect_request(data.socket, data.ipv4, data.uri.port) do
       {:ok, tx} ->
         timer = start_retry_timer(0)
@@ -149,7 +149,7 @@ defmodule TrackerClient.UDP.Statem do
     end
   end
   def handle_event(:info, {:DOWN, mon, :process, parent, reason}, _state, %{mon: mon, parent: parent}) do
-    Logger.debug("shutting down due to parent dying", reason: reason)
+    #Logger.debug("shutting down due to parent dying", reason: reason)
     {:stop, :normal}
   end
   def handle_event(_event, _msg, _state, _data) do
