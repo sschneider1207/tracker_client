@@ -13,7 +13,6 @@ defmodule TrackerClient.UDP.Statem do
       ipv4: nil,
       socket: nil,
       from: nil,
-      last_timestamp: nil,
       request_num: 0,
       timer: nil,
       tx: nil,
@@ -114,6 +113,18 @@ defmodule TrackerClient.UDP.Statem do
       {:ok, tx} ->
         timer = start_retry_timer(request_num)
         {:keep_state, %{data| tx: tx, timer: timer, request_num: request_num}}
+      {:error, err} ->
+        {:stop_and_reply, err, [{:reply, data.from, {:error, err}}]}
+    end
+  end
+  def handle_event(:info, :conn_expired, _state, data) do
+    Logger.debug("conn_id expired")
+    :timer.cancel(data.timer)
+    Logger.debug("sending connection request")
+    case connect_request(data.socket, data.ipv4, data.uri.port) do
+      {:ok, tx} ->
+        timer = start_retry_timer(0)
+        {:next_state, :connection_response, %{data| tx: tx, timer: timer, request_num: 0, conn_id: nil}}
       {:error, err} ->
         {:stop_and_reply, err, [{:reply, data.from, {:error, err}}]}
     end
