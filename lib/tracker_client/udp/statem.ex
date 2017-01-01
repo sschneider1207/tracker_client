@@ -81,6 +81,9 @@ defmodule TrackerClient.UDP.Statem do
         {:stop_and_reply, err, [{:reply, data.from, {:error, err}}]}
     end
   end
+  def handle_event(:info, {:udp, socket, ipv4, port, <<3 :: 32-big-integer, tx :: 32-big-integer, msg :: binary>>}, _state, %{socket: socket, ipv4: ipv4, uri: %{port: port}, tx: tx} = data) do
+    {:stop_and_reply, :err, [{:reply, data.from, {:error, msg}}]}
+  end
   def handle_event(:info, {:udp, socket, ipv4, port, response_packet}, :connection_response, %{socket: socket, ipv4: ipv4, uri: %{port: port}, tx: tx} = data) do
     <<
       0 :: 32-big-integer,
