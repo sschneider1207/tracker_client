@@ -1,4 +1,10 @@
 defmodule TrackerClient.UDP.Statem do
+  @moduledoc """
+  State machine that follows the UDP torrent tracker protocol.
+
+  Definition:
+  http://www.bittorrent.org/beps/bep_0015.html
+  """
   @behaviour :gen_statem
   @initial_conn_id 0x41727101980
   require Logger
@@ -27,10 +33,20 @@ defmodule TrackerClient.UDP.Statem do
     end
   end
 
+  @doc """
+  Starts a state machine with the given url and parent params.
+  """
+  @spec start_link(String.t, Keyword.t) :: :gen_statem.start_ret
   def start_link(url, parent) do
     :gen_statem.start_link(__MODULE__, [url, parent], [])
   end
 
+  @doc """
+  Initiate the announcement.
+  """
+  @spec start_link(:gen_statem.server_ref, Keyword.t) ::
+    {:ok, AnnounceResponse.t} |
+    {:error, :timeout | term}
   def announce(pid, params) do
     :gen_statem.call(pid, {:announce, params})
   end

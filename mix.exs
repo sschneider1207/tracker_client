@@ -14,29 +14,28 @@ defmodule TrackerClient.Mixfile do
      deps: deps]
   end
 
-  # Configuration for the OTP application
-  #
-  # Type "mix help compile.app" for more information
   def application do
     [applications: [:logger, :benx, :gen_stage],
      mod: {TrackerClient.Application, []}]
   end
 
-  # Dependencies can be Hex packages:
-  #
-  #   {:mydep, "~> 0.3.0"}
-  #
-  # Or git/path repositories:
-  #
-  #   {:mydep, git: "https://github.com/elixir-lang/mydep.git", tag: "0.1.0"}
-  #
-  # To depend on another app inside the umbrella:
-  #
-  #   {:myapp, in_umbrella: true}
-  #
-  # Type "mix help deps" for more examples and options
   defp deps do
     [{:benx, "~> 0.1.2"},
-    {:gen_stage, "~> 0.10.0"}]
+    {:gen_stage, "~> 0.10.0"},
+     {:ex_doc, "~> 0.14.5", only: :dev}]
+  end
+
+  defp description do
+    """
+    Make announcements to torrent trackers via HTTP or UDP.
+    """
+  end
+
+  defp package do
+    [name: :tracker_client,
+     files: ["lib", "mix.exs", "README*", "LICENSE*"],
+     maintainers: ["Sam Schneider"],
+     licenses: ["MIT"],
+     links: %{github: "https://github.com/sschneider1207/tracker_client"}]
   end
 end
