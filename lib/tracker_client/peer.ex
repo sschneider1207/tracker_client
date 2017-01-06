@@ -1,4 +1,4 @@
-defmodule TrackerClient.AnnounceResponse.Peer do
+defmodule TrackerClient.Peer do
   @moduledoc false
 
   @opaque t :: %__MODULE__{}

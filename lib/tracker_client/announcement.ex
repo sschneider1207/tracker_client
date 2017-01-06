@@ -1,4 +1,4 @@
-defmodule TrackerClient.AnnounceResponse do
+defmodule TrackerClient.Announcement do
   @moduledoc false
 
   @opaque t :: %__MODULE__{}

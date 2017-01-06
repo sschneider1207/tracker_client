@@ -7,8 +7,7 @@ defmodule TrackerClient.HTTP do
   @params ~w(info_hash peer_id port uploaded downloaded left compact no_peer_id event ip numwant key trackerid)a
   @useragent ~c(:httpc/19.2)
 
-  alias TrackerClient.AnnounceResponse
-  alias AnnounceResponse.Peer
+  alias TrackerClient.{Announcement, Peer}
 
   @doc """
   See `TrackerClient`
@@ -54,7 +53,7 @@ defmodule TrackerClient.HTTP do
     seeders = response["complete"] || 0
     leechers = response["incomplete"] || 0
     peers = parse_peers(response["peers"])
-    AnnounceResponse.new(interval, seeders, leechers, peers, trackerid)
+    Announcement.new(interval, seeders, leechers, peers, trackerid)
   end
 
   defp parse_peers(peers) when is_list(peers) do
